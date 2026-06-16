@@ -1,0 +1,79 @@
+# Prompt
+PROMPT='%~ %# '
+
+# History
+HISTSIZE=10000
+SAVEHIST=10000
+HISTFILE=~/.zsh_history
+setopt APPEND_HISTORY
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+setopt SHARE_HISTORY
+
+# Completion
+if type brew &>/dev/null; then
+  FPATH="$(brew --prefix)/share/zsh/site-functions:$FPATH"
+fi
+autoload -Uz compinit
+compinit
+
+# PATH
+export PATH="./node_modules/.bin:$PATH"
+export PATH="$HOME/commands:$PATH"
+export PATH="$HOME/bin:$PATH"
+export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
+
+# ls
+if command -v gls >/dev/null 2>&1; then
+  alias ls='gls --color=auto'
+  alias ll='gls --group-directories-first -AlhgG'
+else
+  alias ls='ls -G'
+  alias ll='ls -AlhG'
+fi
+
+alias la='ls -A'
+alias l='ls -CF'
+alias llx='ll -X'
+alias llt='ll -t'
+alias lls='ll -S'
+alias llR='ll -RF'
+
+lll() {
+  ll -F "$@" | less
+}
+
+llr() {
+  llR "$@" | less
+}
+
+# Unixy aliases
+alias executable='chmod 764'
+alias grep='grep --color=auto'
+alias search='find . -name'
+alias sudo='sudo '
+
+grepr() {
+  grep -rn "$1" .
+}
+
+grepx() {
+  grep -rn "$1" . | grep -vE "$2"
+}
+
+# Git
+alias git-log='git log --oneline'
+alias git-graph='git log --oneline --graph'
+
+# Docker
+alias dc='docker compose'
+alias dup='docker compose up -d'
+alias dlogs='docker compose logs -f'
+
+dupl() {
+  docker compose up -d "$@" && docker compose logs -f "$@"
+}
+
+# More personal aliases and functions
+[[ -f ~/.aliases ]] && source ~/.aliases
+[[ -f ~/.functions ]] && source ~/.functions
