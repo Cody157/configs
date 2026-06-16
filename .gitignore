@@ -1,4 +1,4 @@
-delint-files.sh
 **/temp
 **/sandbox*
 **/.vscode
+**/.local/
