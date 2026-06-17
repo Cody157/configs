@@ -276,6 +276,14 @@ endfunc
 autocmd BufWrite *.py :call DeleteTrailingWS()
 autocmd BufWrite *.coffee :call DeleteTrailingWS()
 
+" Option Combinations
+"" Option-left / Option-right move by word in insert mode
+inoremap <M-Left>  <C-o>b
+inoremap <M-Right> <C-o>w
+
+"" Option-delete deletes previous word in insert mode
+inoremap <M-BS> <C-w>
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vimgrep searching and cope displaying
