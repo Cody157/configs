@@ -1,6 +1,14 @@
 # Prompt
 PROMPT='%~ %# '
 
+# Option Combinations
+## Option-left / Option-right word movement in iTerm
+bindkey '^[[1;3D' backward-word
+bindkey '^[[1;3C' forward-word
+
+## Option-delete delete previous word
+bindkey '^[^?' backward-kill-word
+
 # History
 HISTSIZE=10000
 SAVEHIST=10000
