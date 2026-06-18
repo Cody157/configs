@@ -1,0 +1,164 @@
+#!/bin/zsh
+
+######################
+## Helper Functions ##
+######################
+
+pad_right() {
+  local str="$1"
+  local pad_count="$2"
+  local pad_char="${3:- }"
+
+  while [[ ${#str} -lt $pad_count ]]; do
+    str="${str}${pad_char}"
+  done
+
+  echo "$str"
+}
+
+################################
+## Convenience Functions ##
+################################
+
+strip-cr() {
+  tr -d '\r' < "$1" > "$2"
+}
+
+search() {
+  local dir="${2:-.}"
+
+  find "$dir" -name "$1" 2>/dev/null
+}
+
+processes() {
+  ps -eaf |
+    grep "$1" |
+    grep -v grep |
+    cut -c1-80
+}
+
+process-ids() {
+  ps -eaf |
+    grep "$1" |
+    grep -v grep |
+    awk '{ print $2 }'
+}
+
+kill-processes() {
+  kill $(process-ids "$1")
+}
+
+encode() {
+  echo -n "$1" | base64
+}
+
+decode() {
+  echo "$1" | base64 -D
+}
+
+
+#################
+## Git Helpers ##
+#################
+
+git-close() {
+  local current_branch
+
+  current_branch="$(git branch --show-current)"
+
+  git checkout main &&
+    git pull &&
+    git branch -d "$current_branch"
+}
+
+
+##################
+## Docker Stuff ##
+##################
+
+typeset -A _dc_map
+
+# Example:
+# _dc_map[tests]='insight-engine'
+
+dc-find() {
+  local names
+
+  names="$(docker ps --format '{{.Names}}')"
+
+  if [[ -z "$names" ]]; then
+    echo "None found!"
+    return
+  fi
+
+  local col=10
+
+  while read -r line; do
+    local short inferred
+
+    short="${line%%_*}"
+    inferred="${_dc_map[$short]:-$short}"
+
+    (( ${#short} > col )) && col=${#short}
+    (( ${#inferred} > col )) && col=${#inferred}
+  done <<< "$names"
+
+  (( col += 5 ))
+
+  echo "$(pad_right inferred "$col")$(pad_right short "$col")full"
+
+  while read -r line; do
+    local short inferred
+
+    short="${line%%_*}"
+    inferred="${_dc_map[$short]:-$short}"
+
+    echo "$(pad_right "$inferred" "$col")$(pad_right "$short" "$col")$line"
+  done <<< "$names"
+}
+
+
+#######################
+## Python Utilities ##
+#######################
+
+pm() {
+  local path="$1"
+
+  if [[ ! -e "$path" ]]; then
+    echo "$path is not a valid path"
+    return 1
+  fi
+
+  if [[ "$path" == *.py ]]; then
+    path="${path%.py}"
+  fi
+
+  if [[ "$path" == ./* ]]; then
+    path="${path#./}"
+  fi
+
+  path="${path//\//.}"
+
+  python -m "$path"
+}
+
+
+################
+## Stopwatch ##
+################
+
+stopwatch() {
+  local start=$SECONDS
+
+  while true; do
+    local elapsed=$((SECONDS - start))
+
+    printf "\r%02d:%02d:%02d" \
+      $((elapsed / 3600)) \
+      $(((elapsed % 3600) / 60)) \
+      $((elapsed % 60))
+
+    sleep 0.1
+  done
+}
