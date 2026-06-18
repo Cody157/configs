@@ -15,12 +15,14 @@
     "command": "workbench.action.focusPreviousGroup" },
 
   /* Toggle Terminal focus */
-  { "key": "cmd+`",
+  { "key": "cmd+1",
     "command": "workbench.action.terminal.focus",
     "when": "!terminalFocus" },
-  { "key": "cmd+`",
+  { "key": "cmd+1",
     "command": "workbench.action.focusActiveEditorGroup",
     "when": "terminalFocus" },
+  // { "key": "alt+`",
+  //   "command": "workbench.action.terminal.focus" },
 
   /* Go to declaration keyboard shorcuts */
   { "key": "cmd+enter",
@@ -34,62 +36,62 @@
   // Simple navigation
   { "key": "j",
     "command": "list.focusDown",
-    "when": "filesExplorerFocus" },
+    "when": "filesExplorerFocus && !inputFocus" },
   { "key": "k",
     "command": "list.focusUp",
-    "when": "filesExplorerFocus" },
+    "when": "filesExplorerFocus && !inputFocus" },
   { "key": "h",
     "command": "list.collapse",
-    "when": "filesExplorerFocus" },
+    "when": "filesExplorerFocus && !inputFocus" },
   { "key": "l",
     "command": "list.expand",
-    "when": "filesExplorerFocus" },
+    "when": "filesExplorerFocus && !inputFocus" },
   { "key": "g g",
     "command": "list.focusFirst",
-    "when": "filesExplorerFocus" },
+    "when": "filesExplorerFocus && !inputFocus" },
   { "key": "shift+g",
     "command": "list.focusLast",
-    "when": "filesExplorerFocus" },
+    "when": "filesExplorerFocus && !inputFocus" },
 
   // Modification
   { "key": "i",
     "command": "renameFile",
-    "when": "explorerViewletVisible && filesExplorerFocus" },
+    "when": "explorerViewletVisible && filesExplorerFocus && !inputFocus" },
   // These 2 aren't really vim, but I don't know any real mapping here...
   { "key": "n",
     "command": "explorer.newFile",
-    "when": "filesExplorerFocus" },
+    "when": "filesExplorerFocus && !inputFocus" },
   { "key": "shift+n",
     "command": "explorer.newFolder",
-    "when": "filesExplorerFocus" },
+    "when": "filesExplorerFocus && !inputFocus" },
 
   // Copy paste
   { "key": "shift+y",
     "command": "copyFilePath",
-    "when": "filesExplorerFocus" },
+    "when": "filesExplorerFocus && !inputFocus" },
   { "key": "y y",
     "command": "filesExplorer.copy",
-    "when": "filesExplorerFocus" },
+    "when": "filesExplorerFocus && !inputFocus" },
   { "key": "p",
     "command": "filesExplorer.paste",
-    "when": "filesExplorerFocus" },
+    "when": "filesExplorerFocus && !inputFocus" },
   // Obviously this should be cut, but no such operation exists
   { "key": "d d",
     "command": "moveFileToTrash",
-    "when": "filesExplorerFocus" },
-  
+    "when": "filesExplorerFocus && !inputFocus" },
+
   // Search only in selected folder
   { "key": "/",
     "command": "filesExplorer.findInFolder",
-    "when": "filesExplorerFocus" },
+    "when": "filesExplorerFocus && !inputFocus" },
 
   // Open and exit
   { "key": "enter",
     "command": "list.select",
-    "when": "filesExplorerFocus" },
+    "when": "filesExplorerFocus && !inputFocus" },
   { "key": "escape",
     "command": "workbench.action.focusActiveEditorGroup",
-    "when": "filesExplorerFocus" },
+    "when": "filesExplorerFocus && !inputFocus" },
 
   /* Some mode switch commands */
   { "key": "cmd+k t",
@@ -101,5 +103,44 @@
 
   /* Toggle error/warning view */
   { "key": "ctrl+shift+`",
-    "command": "workbench.actions.view.problems" }
+    "command": "workbench.actions.view.problems"
+  },
+  {
+    "key": "cmd+2",
+    "command": "-workbench.action.focusSecondEditorGroup"
+  },
+  {
+    "key": "alt+.",
+    "command": "editor.action.showDefinitionPreviewHover"
+  },
+  {
+    "key": "cmd+[",
+    "command": "workbench.action.navigateBack",
+    "when": "canNavigateBack"
+  },
+  {
+    "key": "ctrl+-",
+    "command": "-workbench.action.navigateBack",
+    "when": "canNavigateBack"
+  },
+  {
+    "key": "cmd+]",
+    "command": "workbench.action.navigateForward",
+    "when": "canNavigateForward"
+  },
+  {
+    "key": "ctrl+shift+-",
+    "command": "-workbench.action.navigateForward",
+    "when": "canNavigateForward"
+  },
+  {
+    "key": "cmd+[",
+    "command": "-editor.action.outdentLines",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "cmd+]",
+    "command": "-editor.action.indentLines",
+    "when": "editorTextFocus && !editorReadonly"
+  }
 ]
