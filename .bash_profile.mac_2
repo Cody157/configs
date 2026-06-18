@@ -1,0 +1,35 @@
+source_if_exists() {
+  if [ -f $1 ]; then . $1; fi
+}
+
+#if [ -f ~/.bashrc ]; then . ~/.bashrc; fi
+#if [ -f ~/.bash_profile_realocity ]; then . ~/.bash_profile_realocity; fi
+source_if_exists ~/.bashrc
+source_if_exists ~/.bash_profile_realocity
+source_if_exists ~/.bash_aliases
+
+# not sure where this came from or how to make it pick up new versions
+#export JAVA_HOME="$(/usr/libexec/java_home -v 18)"
+#export JAVA_HOME='/Library/Java/JavaVirtualMachines/jdk-18.0.1.1.jdk/Contents/Home'
+
+## Pyenv (recommended to put in bash_profile and not bashrc)
+# Somehow this is needed to make sure the env set up by `pyenv global`
+# actually gets linked to the `python` command in the shell
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+fi
+ 
+## aws gsuite setup
+#
+## brew nvm setup
+export NVM_DIR="$HOME/.nvm"
+# This loads nvm
+[ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"
+# This loads nvm bash_completion
+[ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"
+
+export PATH="/usr/local/opt/libpq/bin:$PATH"
+
+
+# Created by `pipx` on 2025-03-12 13:45:33
+export PATH="$PATH:/Users/codyestes/.local/bin"
