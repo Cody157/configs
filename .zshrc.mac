@@ -1,6 +1,9 @@
 # Prompt
 PROMPT='%~ %# '
 
+# Re-source this file after making changes
+alias re-source='source ~/.zshrc'
+
 # Option Combinations
 ## Option-left / Option-right word movement in iTerm
 bindkey '^[[1;3D' backward-word
@@ -31,57 +34,24 @@ export PATH="$HOME/commands:$PATH"
 export PATH="$HOME/bin:$PATH"
 export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
 
-# ls
-if command -v gls >/dev/null 2>&1; then
-  alias ls='gls --color=auto'
-  alias ll='gls --group-directories-first -AlhgG'
-else
-  alias ls='ls -G'
-  alias ll='ls -AlhG'
-fi
-
-alias la='ls -A'
-alias l='ls -CF'
-alias llx='ll -X'
-alias llt='ll -t'
-alias lls='ll -S'
-alias llR='ll -RF'
-
-lll() {
-  ll -F "$@" | less
-}
-
-llr() {
-  llR "$@" | less
-}
-
 # Unixy aliases
-alias executable='chmod 764'
-alias grep='grep --color=auto'
-alias search='find . -name'
-alias sudo='sudo '
-
-grepr() {
-  grep -rn "$1" .
-}
-
-grepx() {
-  grep -rn "$1" . | grep -vE "$2"
-}
-
-# Git
-alias git-log='git log --oneline'
-alias git-graph='git log --oneline --graph'
-
-# Docker
-alias dc='docker compose'
-alias dup='docker compose up -d'
-alias dlogs='docker compose logs -f'
-
-dupl() {
-  docker compose up -d "$@" && docker compose logs -f "$@"
-}
-
 # More personal aliases and functions
 [[ -f ~/.aliases ]] && source ~/.aliases
 [[ -f ~/.functions ]] && source ~/.functions
+[[ -f ~/.kube-functions ]] && source ~/.kube-functions
+
+# Everything after this is stuff added to install stuff
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+export PATH="/opt/homebrew/bin:$PATH"
+export LDFLAGS="-L/opt/homebrew/opt/python@3.12/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/python@3.12/include"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/codyestes/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/codyestes/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/codyestes/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/codyestes/google-cloud-sdk/completion.zsh.inc'; fi
