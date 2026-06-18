@@ -4,24 +4,21 @@
         "**/dist": true,
         "**/lib": true,
         "**/node_modules": true,
-        "**/typings": true,
-        "**/target": true
+        "**/target": true,
+        "**/typings": true
     },
 
     "editor.tabSize": 2,
     //"editor.formatOnType": true,
     "editor.cursorStyle": "block",
-    "editor.parameterHints": false,
 
     "files.eol": "\n",
 
-    "tslint.jsEnable": true,
-    
     // "typescript.tsdk": "/usr/local/lib/node_modules/typescript/lib",
     "typescript.tsdk": "./node_modules/typescript/lib",
     "typescript.implementationsCodeLens.enabled": true,
 
-    "vim.otherModesKeyBindings": [
+    "vim.normalModeKeyBindings": [
         {
             "before": [ "`" ],
             "after": [ "^" ]
@@ -32,7 +29,7 @@
         },
         {
             "before": ["<space>"],
-            "after": ["/", "esc"]
+            "commands": [":nohl"]
         },
         {
             "before": ["j"],
@@ -41,6 +38,20 @@
         {
             "before": ["k"],
             "after": ["g", "k"]
+        },
+        {
+            "before": ["<s-tab>"],
+            "after": ["<", "<"]
+        }
+    ],
+    "vim.visualModeKeyBindings": [
+        {
+            "before": ["<tab>"],
+            "after": [">", "g", "v"]
+        },
+        {
+            "before": ["<s-tab>"],
+            "after": ["<", "g", "v"]
         }
     ],
 
@@ -49,11 +60,51 @@
 
     "vim.ignorecase": false,
     "vim.useSystemClipboard": false,
-    "vim.useSolidBlockCursor": false,
+    "vim.useSolidBlockCursor": false, // ???
     "vim.hlsearch": true,
     "vim.useCtrlKeys": true,
 
     "window.zoomLevel": 0,
     "workbench.iconTheme": "vs-seti",
-    "workbench.welcome.enabled": false
+
+    // eslint defaults
+    "eslint.enable": true,
+    "eslint.format.enable": true,
+
+    "terminal.integrated.defaultProfile.osx": "bash",
+    "terminal.integrated.profiles.osx": {
+      "bash": {
+        "path": "bash",
+        "args": ["-l"]
+      }
+    },
+    "eslint.rules.customizations": [
+        {}
+    ],
+    "eslint.useFlatConfig": true,
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "typescript.preferences.quoteStyle": "single",
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "explorer.confirmDragAndDrop": false,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "[javascript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "files.trimTrailingWhitespace": true,
+    "editor.minimap.enabled": false,
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false,
+        "typescript": false
+    },
+    "security.workspace.trust.untrustedFiles": "newWindow",
+    "claudeCode.preferredLocation": "panel",
+    "diffEditor.renderSideBySide": false
 }
