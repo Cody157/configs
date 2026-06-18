@@ -1,0 +1,26 @@
+#!/bin/bash
+
+echo "Press Ctrl+C to stop the stopwatch."
+
+# Start the built-in SECONDS counter
+SECONDS=0
+
+# Loop indefinitely
+while true; do
+    # Get the current elapsed seconds
+    elapsed_seconds=$SECONDS
+
+    # Format the time as HH:MM:SS
+    # %02d ensures two digits, padding with leading zeros
+    time_format=$(printf "%02d:%02d:%02d" $((elapsed_seconds/3600)) $(( (elapsed_seconds%3600)/60 )) $((elapsed_seconds%60)))
+
+    # Use \r (carriage return) to return the cursor to the start of the line
+    # Use -ne to prevent a newline and enable interpretation of escape sequences
+    printf "\rTime elapsed: %s" "$time_format"
+
+    # Wait for a short duration to reduce CPU usage
+    sleep 0.1
+done
+
+# Note: The script exits with Ctrl+C, so the following lines are not reached in normal execution.
+# You can add a trap for SIGINT (Ctrl+C) to run cleanup commands if needed.
