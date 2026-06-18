@@ -1,0 +1,120 @@
+#! /bin/zsh
+
+################
+## ls aliases ##
+################
+
+if command -v gls >/dev/null 2>&1; then
+  alias ls='gls --color=auto'
+  alias ll='gls --group-directories-first -AlhgG'
+else
+  alias ls='ls -G'
+  alias ll='ls -AlhG'
+fi
+
+alias la='ls -A'
+alias l='ls -CF'
+alias llx='ll -X' # Sort by extension
+alias llt='ll -t' # Sort by modification time
+alias lls='ll -S' # Sort by file size
+alias llR='ll -RF'
+
+lll() {
+  ll -F "$@" | less
+}
+
+llr() {
+  llR "$@" | less
+}
+
+
+##################
+## grep aliases ##
+##################
+
+alias grep='grep --color=auto'
+
+grepr() {
+  grep -rn "$1" .
+}
+
+grepx() {
+  grep -rn "$1" . | grep -vE "$2"
+}
+
+grepxi() {
+  grepx "$2" "$1"
+}
+
+#########################
+## Other unixy aliases ##
+#########################
+
+alias executable='chmod 764'
+alias sudo='sudo '
+
+################################
+## random convenience aliases ##
+################################
+
+alias executable='chmod 764' # Keeps default permissions except executable by owner
+
+alias now="node -e 'console.log(new Date())'"
+
+alias format-json="pbpaste | jq '.' | pbcopy"
+alias format-json-copy="pbpaste | jq '.' | pbcopy"
+alias format-json-print="pbpaste | jq '.'"
+alias pq="pbpaste | jq '.'"
+
+#################
+## git aliases ##
+#################
+
+alias git-log='git log --oneline -10'
+alias git-graph='git log --oneline -10 --graph'
+alias git-ca='git commit --amend --no-edit'
+alias git-sr='git submodule deinit --all && git submodule init && git submodule update'
+alias git-m='git checkout main && git pull'
+
+
+####################
+## docker aliases ##
+####################
+
+# Modern Docker Compose syntax.
+alias dc='docker compose'
+alias dup='docker compose up -d'
+alias dlogs='docker compose logs -f'
+
+dupl() {
+  docker compose up -d "$@" && docker compose logs -f "$@"
+}
+
+########################
+## kubernetes aliases ##
+########################
+
+# Keep if you use kubectl regularly.
+alias k='kubectl'
+
+########################
+## virtualenv aliases ##
+########################
+
+alias venv='source .venv/bin/activate'
+
+##################
+## python stuff ##
+##################
+
+alias poetry-env='poetry env use $(pyenv which python)'
+alias poetry-shell='eval $(poetry env activate)'
+alias venv-init='python -m venv .venv'
+
+
+##################
+## Kotlin stuff ##
+##################
+
+# Consider deleting if you don't currently use Kotlin.
+alias kotlin-repl='kotlinc-jvm'
