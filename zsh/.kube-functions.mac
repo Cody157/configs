@@ -1,0 +1,241 @@
+#! /bin/zsh
+
+######################
+## Helper Functions ##
+######################
+
+# Pulls a named option out of an args array.
+# Example:
+#   args=(pod-name env -o prod -n default)
+#   get_named_arg args -o context ""
+#   get_named_arg args -n namespace ""
+#
+# Result:
+#   context=prod
+#   namespace=default
+#   args=(pod-name env)
+get_named_arg() {
+  local args_name="$1"
+  local key="$2"
+  local return_name="$3"
+  local default="$4"
+
+  local -a _get_named_arg_args
+  local _get_named_arg_value="$default"
+  local index
+
+  eval "_get_named_arg_args=(\"\${${args_name}[@]}\")"
+
+  for (( index = 1; index <= ${#_get_named_arg_args}; index++ )); do
+    if [[ "${_get_named_arg_args[$index]}" == "$key" ]]; then
+      _get_named_arg_value="${_get_named_arg_args[$((index + 1))]:-$default}"
+
+      _get_named_arg_args[$index]=()
+      _get_named_arg_args[$index]=()
+
+      break
+    fi
+  done
+
+  eval "${args_name}=(\"\${_get_named_arg_args[@]}\")"
+  eval "${return_name}=\"\$_get_named_arg_value\""
+}
+
+
+##########################
+## Kubernetes Functions ##
+##########################
+
+### NOTE: these assume pod/deployment names are the same, may need to reconsider that assumption
+
+k-first() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: k-first pod_name [info_type]"
+    echo "  pod_name: used in grep"
+    echo "  info_type=[name, ip]; default: name"
+    echo "Options:"
+    echo "  -o: context; eg: beta, prod"
+    echo "  -n: namespace; eg: default, datadog; default: pod_name"
+    return 1
+  fi
+
+  local context namespace pod_name info_type info_index
+  local -a args request
+
+  args=("$@")
+
+  get_named_arg args -o context ""
+  get_named_arg args -n namespace ""
+
+  pod_name="${args[1]}"
+
+  if [[ -z "$namespace" ]]; then
+    namespace="$pod_name"
+  fi
+
+  info_type="${args[2]}"
+
+  if [[ -n "$info_type" && "$info_type" != "name" && "$info_type" != "ip" ]]; then
+    echo "info_type can only be one of:"
+    echo "  name"
+    echo "  ip"
+    return 1
+  fi
+
+  info_index=1
+
+  if [[ "$info_type" == "ip" ]]; then
+    info_index=6
+  fi
+
+  request=(kubectl --namespace "$namespace")
+
+  if [[ -n "$context" ]]; then
+    request+=("--context" "$context")
+  fi
+
+  request+=(get pod -o wide)
+
+  "${request[@]}" |
+    grep --color=never "$pod_name" |
+    head -n 1 |
+    awk "{ print \$$info_index }"
+}
+
+
+k-port-forward() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: k-port-forward pod_name [port_map]"
+    echo "  pod_name: used in grep"
+    echo "  port_map: local_port[:pod_port]; default: 8000"
+    echo "Options:"
+    echo "  -o: context; eg: beta, prod"
+    echo "  -n: namespace; eg: default, datadog; default: pod_name"
+    return 1
+  fi
+
+  local context namespace name port_map pod_name
+  local -a args
+
+  args=("$@")
+
+  get_named_arg args -o context ""
+  get_named_arg args -n namespace ""
+
+  name="${args[1]}"
+  port_map="${args[2]:-8000}"
+
+  if [[ -z "$context" ]]; then
+    context="$(kubectl config current-context)"
+  fi
+
+  if [[ -z "$namespace" ]]; then
+    namespace="$name"
+  fi
+
+  pod_name="$(k-first "$name" -o "$context" -n "$namespace")"
+
+  echo "Pod: $context.$pod_name.$namespace"
+
+  kubectl \
+    --context "$context" \
+    --namespace "$namespace" \
+    port-forward "$pod_name" "$port_map"
+}
+
+
+k-exec() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: k-exec pod_name [command]"
+    echo "  pod_name: used in grep"
+    echo "  command: default: /bin/bash"
+    echo "Options:"
+    echo "  -c: container name"
+    echo "  -o: context; eg: beta, prod"
+    echo "  -n: namespace; eg: default, datadog; default: pod_name"
+    return 1
+  fi
+
+  local context container namespace name run_command pod_name
+  local -a args request
+
+  args=("$@")
+
+  get_named_arg args -o context ""
+  get_named_arg args -c container ""
+  get_named_arg args -n namespace ""
+
+  name="${args[1]}"
+  run_command="${args[2]:-/bin/bash}"
+
+  if [[ -z "$context" ]]; then
+    context="$(kubectl config current-context)"
+  fi
+
+  if [[ -z "$namespace" ]]; then
+    namespace="$name"
+  fi
+
+  pod_name="$(k-first "$name" -o "$context" -n "$namespace")"
+
+  echo "Pod: $context.$pod_name.$namespace"
+
+  request=(
+    kubectl
+    --context "$context"
+    --namespace "$namespace"
+    exec -it "$pod_name"
+  )
+
+  if [[ -n "$container" ]]; then
+    request+=(-c "$container")
+  fi
+
+  request+=(-- "$run_command")
+
+  "${request[@]}"
+}
+
+
+k-roll() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: k-roll deployment_name"
+    echo "  deployment_name: name of deployment"
+    echo "Options:"
+    echo "  -o: context; eg: beta, prod"
+    echo "  -n: namespace; eg: default, datadog; default: deployment_name"
+    return 1
+  fi
+
+  local context namespace deployment_name
+  local -a args
+
+  args=("$@")
+
+  get_named_arg args -o context ""
+  get_named_arg args -n namespace ""
+
+  deployment_name="${args[1]}"
+
+  if [[ -z "$context" ]]; then
+    context="$(kubectl config current-context)"
+  fi
+
+  if [[ -z "$namespace" ]]; then
+    namespace="$deployment_name"
+  fi
+
+  echo "Rolling: $context.$deployment_name.$namespace"
+
+  kubectl \
+    --context "$context" \
+    --namespace "$namespace" \
+    rollout restart "deployment/$deployment_name"
+}
+
+########################
+## Kubernetes Aliases ##
+########################
+
+alias k='kubectl'
+alias k-pf='k-port-forward'
